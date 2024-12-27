@@ -11,10 +11,9 @@
 def update_graphs(market_type, countries, sector, securities):
     if securities is None or len(securities) == 0:
         return no_update, no_update, True, "Please select at least one security"
-    elif len(securities) > 2:  # Changed from 4 to 2
+    elif len(securities) > 2:
         return no_update, no_update, True, "Maximum 2 securities allowed"
 
-    # Rest of your existing update_graphs function remains the same
     if not isinstance(countries, list):
         countries = [countries]
 
@@ -84,17 +83,15 @@ def update_graphs(market_type, countries, sector, securities):
     if filtered_data.empty or not securities:
         return fig_pct, fig_revenue, True, "No data available for the selected filters."
 
-    # Calculate data ranges with additional padding for border lines
+    # Calculate data ranges with additional padding
     overall_pct_min = filtered_data['country_exposure_pct'].min()
     overall_pct_max = filtered_data['country_exposure_pct'].max()
     overall_revenue_min = filtered_data['country_exposure_revenue'].min()
     overall_revenue_max = filtered_data['country_exposure_revenue'].max()
 
-    # Calculate padding (40% for better spacing with border lines)
     pct_padding = (overall_pct_max - overall_pct_min) * 0.40
     revenue_padding = (overall_revenue_max - overall_revenue_min) * 0.40
 
-    # Adjust ranges to accommodate border lines
     pct_range = {
         'min': overall_pct_min - pct_padding,
         'max': overall_pct_max + pct_padding
@@ -150,28 +147,12 @@ def update_graphs(market_type, countries, sector, securities):
         layer="below"
     )
 
-    # Update x-axis ranges
-    fig_pct.update_xaxes(
-        range=[
-            filtered_data['Date'].min() - pd.Timedelta(days=30),
-            filtered_data['Date'].max() + pd.Timedelta(days=30)
-        ]
-    )
-
-    fig_revenue.update_xaxes(
-        range=[
-            filtered_data['Date'].min() - pd.Timedelta(days=10),
-            filtered_data['Date'].max() + pd.Timedelta(days=10)
-        ]
-    )
-
     for i, security in enumerate(securities):
         security_data = filtered_data[filtered_data['security_name'] == security]
 
         if len(security_data) == 0:
             continue
 
-        # Format revenue for hover template
         def format_revenue_str(value):
             if abs(value) >= 1e9:
                 return f"{value/1e9:.1f}B"
@@ -226,7 +207,7 @@ def update_graphs(market_type, countries, sector, securities):
             )
         ))
 
-    # Base layout configuration
+    # Base layout configuration with range selector
     base_layout = dict(
         paper_bgcolor='white',
         plot_bgcolor='white',
@@ -247,7 +228,38 @@ def update_graphs(market_type, countries, sector, securities):
             font=dict(size=11),
             itemsizing='constant'
         ),
-        margin=dict(t=120, r=70, l=70, b=50)
+        margin=dict(t=120, r=70, l=70, b=50),
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=2,
+                         label="2y",
+                         step="year",
+                         stepmode="backward"),
+                    dict(count=4,
+                         label="4y",
+                         step="year",
+                         stepmode="backward"),
+                    dict(count=6,
+                         label="6y",
+                         step="year",
+                         stepmode="backward"),
+                    dict(step="all",
+                         label="all")
+                ]),
+                bgcolor='#f8f9fa',
+                font=dict(size=12),
+                xanchor='left',
+                x=0,
+                y=1.1,
+                activecolor='#dee2e6',
+                bordercolor='#dee2e6',
+                borderwidth=1
+            ),
+            type="date",
+            tickfont=dict(weight='bold'),
+            title_font=dict(weight='bold')
+        )
     )
 
     # Update percentage figure layout
@@ -266,10 +278,6 @@ def update_graphs(market_type, countries, sector, securities):
             gridcolor='lightgray',
             gridwidth=0.5,
             zeroline=False,
-            tickfont=dict(weight='bold'),
-            title_font=dict(weight='bold')
-        ),
-        xaxis=dict(
             tickfont=dict(weight='bold'),
             title_font=dict(weight='bold')
         ),
@@ -297,7 +305,7 @@ def update_graphs(market_type, countries, sector, securities):
         yaxis2=dict(
             title="Revenue",
             range=[max(0, overall_revenue_min - revenue_padding),
-                overall_revenue_max + revenue_padding],
+                  overall_revenue_max + revenue_padding],
             gridcolor='lightgray',
             gridwidth=0.5,
             zeroline=True,
@@ -306,14 +314,10 @@ def update_graphs(market_type, countries, sector, securities):
             tickfont=dict(weight='bold'),
             title_font=dict(weight='bold')
         ),
-        xaxis=dict(
-            tickfont=dict(weight='bold'),
-            title_font=dict(weight='bold')
-        ),
         yaxis=dict(
             title="Revenue",
             range=[max(0, overall_revenue_min - revenue_padding),
-                overall_revenue_max + revenue_padding],
+                  overall_revenue_max + revenue_padding],
             overlaying='y2',
             side='right',
             showgrid=False,
@@ -321,9 +325,6 @@ def update_graphs(market_type, countries, sector, securities):
             title_font=dict(weight='bold')
         )
     )
-
-    # Add improved time range selector
-    add_time_range_selector([fig_pct, fig_revenue])
 
     return fig_pct, fig_revenue, False, ""
 
@@ -341,100 +342,6 @@ def download_csv(n_clicks, market_type, securities):
     csv_data = filtered_data.to_csv(index=False)
     return {
         'content': csv_data,
-        'filename': 'china_exposure.csv',
+        'filename': 'exposure_data.csv',
         'type': 'text/csv'
     }
-
-
-def add_time_range_selector(figures):
-    """
-    Add time range selector buttons to Plotly figures.
-    Includes buttons for 2Y, 3Y, 4Y, 7Y and All time periods.
-    
-    Args:
-        figures (list): List of Plotly figure objects to update
-    """
-    current_date = pd.Timestamp.now()
-    
-    # Create button configurations
-    range_buttons = [
-        dict(
-            label="2Y",
-            method="update",
-            args=[{
-                "visible": True
-            }, {
-                "xaxis.range": [
-                    (current_date - pd.DateOffset(years=2)).strftime('%Y-%m-%d'),
-                    current_date.strftime('%Y-%m-%d')
-                ]
-            }]
-        ),
-        dict(
-            label="3Y",
-            method="update", 
-            args=[{
-                "visible": True
-            }, {
-                "xaxis.range": [
-                    (current_date - pd.DateOffset(years=3)).strftime('%Y-%m-%d'),
-                    current_date.strftime('%Y-%m-%d')
-                ]
-            }]
-        ),
-        dict(
-            label="4Y",
-            method="update",
-            args=[{
-                "visible": True
-            }, {
-                "xaxis.range": [
-                    (current_date - pd.DateOffset(years=4)).strftime('%Y-%m-%d'),
-                    current_date.strftime('%Y-%m-%d')
-                ]
-            }]
-        ),
-        dict(
-            label="7Y",
-            method="update",
-            args=[{
-                "visible": True
-            }, {
-                "xaxis.range": [
-                    (current_date - pd.DateOffset(years=7)).strftime('%Y-%m-%d'),
-                    current_date.strftime('%Y-%m-%d')
-                ]
-            }]
-        ),
-        dict(
-            label="All",
-            method="update",
-            args=[{
-                "visible": True
-            }, {
-                "xaxis.autorange": True
-            }]
-        )
-    ]
-
-    # Apply to all figures
-    for fig in figures:
-        fig.update_layout(
-            updatemenus=[dict(
-                type="buttons",
-                showactive=True,
-                buttons=range_buttons,
-                direction="right",
-                pad={"r": 10, "t": 10},
-                x=0.05,  # Adjusted position for better visibility
-                y=1.14,
-                xanchor="left",
-                yanchor="top",
-                bgcolor="white",
-                bordercolor="rgba(100, 149, 237, 0.7)",
-                borderwidth=1.3,
-                font=dict(size=12)
-            )],
-            # Add margin to ensure buttons are visible
-            margin=dict(t=120, r=70, l=70, b=50)
-        )
