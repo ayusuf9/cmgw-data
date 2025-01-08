@@ -1,114 +1,148 @@
 import dash_bootstrap_components as dbc
 from dash import html
 
-# Define some custom styles
 styles = {
     'container': {
         'padding': '40px',
-        'max-width': '1200px',
+        'max-width': '1400px',
         'margin': '0 auto',
         'font-family': "'DM Sans', sans-serif",
+        'display': 'flex',
+        'gap': '40px'
     },
-    'header': {
-        'text-align': 'center',
-        'margin-bottom': '40px',
+    'main_content': {
+        'flex': '1',
+        'max-width': '900px'
+    },
+    'team_sidebar': {
+        'width': '300px',
         'padding': '20px',
-        'background': 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        'border-radius': '10px',
-        'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.1)',
-    },
-    'section': {
-        'margin-bottom': '30px',
-        'padding': '25px',
-        'background-color': 'white',
+        'background': 'white',
         'border-radius': '8px',
         'box-shadow': '0 2px 4px rgba(0, 0, 0, 0.05)',
     },
-    'feature_card': {
-        'height': '100%',
-        'border': 'none',
-        'box-shadow': '0 2px 4px rgba(0, 0, 0, 0.05)',
-        'transition': 'transform 0.3s ease',
+    'team_member': {
+        'display': 'flex',
+        'align-items': 'center',
+        'margin-bottom': '15px',
+        'padding': '10px',
+        'border-radius': '8px',
+        'transition': 'background-color 0.3s'
     },
+    'team_member_img': {
+        'width': '40px',
+        'height': '40px',
+        'border-radius': '50%',
+        'margin-right': '15px'
+    },
+    'team_member_info': {
+        'flex': '1'
+    },
+    'section': {
+        'margin-bottom': '30px'
+    },
+    'subsection': {
+        'margin-left': '20px',
+        'margin-bottom': '15px'
+    }
 }
 
-# Create the about page layout
+# Team members data
+team_members = [
+    {"name": "Anne Vandenabeele", "role": "ABV", "img": "/assets/profile-placeholder.png"},
+    {"name": "Dana Mott", "role": "DACM", "img": "/assets/profile-placeholder.png"},
+    {"name": "Darrell Spence", "role": "DTS", "img": "/assets/profile-placeholder.png"},
+    {"name": "Elizabeth Mooney", "role": "EAFM", "img": "/assets/profile-placeholder.png"},
+    {"name": "Jared Franz", "role": "JASF", "img": "/assets/profile-placeholder.png"},
+    {"name": "Tina Chen", "role": "TNAC", "img": "/assets/profile-placeholder.png"}
+]
+
 tab_layout = html.Div(style=styles['container'], children=[
-    # Header Section
-    html.Div(style=styles['header'], children=[
-        html.H1("About the Exposure Tool", 
-                style={'color': '#2c3e50', 'font-weight': '700', 'margin-bottom': '20px'}),
-        html.P("A comprehensive solution for analyzing economic exposure across global markets",
-               style={'color': '#5a6c7d', 'font-size': '1.2rem'}),
-    ]),
-
-    # Main Content Sections
-    html.Div(style=styles['section'], children=[
-        html.H2("Overview", style={'color': '#2c3e50', 'margin-bottom': '20px'}),
+    # Main Content
+    html.Div(style=styles['main_content'], children=[
+        html.H1("Exposure Tool", style={'margin-bottom': '20px', 'color': '#2c3e50'}),
+        
         html.P([
-            "The Exposure Tool is a sophisticated platform designed to help investors and analysts understand ",
-            "companies' economic exposure to different markets, with a particular focus on China and Hong Kong. ",
-            "By leveraging MSCI's economic exposure data, we provide detailed insights into revenue sources ",
-            "and market dependencies across various sectors and companies."
-        ], style={'line-height': '1.6', 'color': '#5a6c7d'}),
+            "CSR Exposure is a tool that aggregates the models and views published by CSR analysts. ",
+            "Its purpose is to easily allow users to compare and contrast CSR analyst views on portfolios, sectors, and companies ",
+            "to make informed investment decisions."
+        ], style={'margin-bottom': '30px', 'line-height': '1.6', 'color': '#5a6c7d'}),
+
+        html.Div(style=styles['section'], children=[
+            html.P("The CSR Analyst models we currently have included into Exposure are:", 
+                  style={'margin-bottom': '20px', 'font-weight': '500'}),
+            
+            # ABV's TOPIX Model
+            html.Div(style=styles['section'], children=[
+                html.H3("ABV's TOPIX Model:", style={'color': '#2c3e50', 'margin-bottom': '10px', 'font-size': '1.1rem'}),
+                html.P([
+                    "A model that shows how company performance may be sensitive to or vary against different global macroeconomic indicators, ",
+                    "highlighting which companies or industries have historically outperformed during different phases of the cycle using hit rates. ",
+                    "It offers a way to identify and incorporate macroeconomic data into individual company, sectors, and to view these factors ",
+                    "within individual portfolio. For now, this work is only available for equities and against the U.S. cycles and those listed below. ",
+                    "We are working on broadening out to different benchmarks, countries, and cycles."
+                ], style={'margin-bottom': '15px', 'line-height': '1.6', 'color': '#5a6c7d'}),
+                
+                html.P("Japanese Macroeconomic cycles include:", 
+                      style={'margin-bottom': '10px', 'font-weight': '500'}),
+                html.Ul([
+                    html.Li("Japan Overall activity cycle"),
+                    html.Li("Japan Manufacturing cycle"),
+                    html.Li("Japan Employment cycle"),
+                    html.Li("Japan Inflation (CPI all items) cycle"),
+                    html.Li("Japan Oil cycle"),
+                    html.Li("Japan Monetary conditions cycle"),
+                    html.Li("Japan JGB curve (30 year less policy rate) cycle"),
+                    html.Li("Japan 10-yr JGB yield cycle"),
+                    html.Li("Japan JPY/USD, %YoY cycle"),
+                    html.Li("Japan External demand cycle"),
+                ], style={'margin-left': '40px', 'line-height': '1.6', 'color': '#5a6c7d'})
+            ]),
+
+            # DACM's Star Power Rating
+            html.Div(style=styles['section'], children=[
+                html.H3("DACM's Star Power Rating:", style={'color': '#2c3e50', 'margin-bottom': '10px', 'font-size': '1.1rem'}),
+                html.P([
+                    "The Star Power Rating (SPR) is a metric created by DACM through a project on disruption that was a collaboration with ACM, BYC, CXXS, CHG, DDO, JWK, KMBZ, LXN, and NNC. ",
+                    "SPR metrics are on a scale of 0% (worst) to 100% (best). The intention is for the metric to help investors identify high-quality companies with the potential to be disruptive and generate high returns."
+                ], style={'margin-bottom': '15px', 'line-height': '1.6', 'color': '#5a6c7d'})
+            ]),
+
+            # DTS's Headwind/Tailwind Framework
+            html.Div(style=styles['section'], children=[
+                html.H3("DTS's Headwind/Tailwind Framework:", style={'color': '#2c3e50', 'margin-bottom': '10px', 'font-size': '1.1rem'}),
+                html.P([
+                    "A framework developed over the years that highlight where macroeconomic, political, and other factors may impact specific companies or industries. ",
+                    "This framework is continuously evolving, as such, companies and industries may be added and removed over time. ",
+                    "This framework is entirely from a macroeconomic perspective. There are many factors that play a role in determining the return of a company or industry, ",
+                    "and this is not intended to be a substitute for the bottom-up analysis that is done on these companies and industries. ",
+                    "Rather, it is meant to provide a different perspective that can hopefully complement that analysis."
+                ], style={'margin-bottom': '15px', 'line-height': '1.6', 'color': '#5a6c7d'})
+            ]),
+
+            # JASF's Macro Cycle Tool
+            html.Div(style=styles['section'], children=[
+                html.H3("JASF's Macro Cycle Tool:", style={'color': '#2c3e50', 'margin-bottom': '10px', 'font-size': '1.1rem'}),
+                html.P([
+                    "A model that shows how company performance may be sensitive to or vary against different U.S. macroeconomic indicators, ",
+                    "highlighting which companies or industries have historically outperformed during different phases of the cycle using hit rates. ",
+                    "It offers a way to identify and incorporate macroeconomic data into individual company, sectors, and to view these factors within individual portfolio."
+                ], style={'margin-bottom': '15px', 'line-height': '1.6', 'color': '#5a6c7d'})
+            ])
+        ])
     ]),
 
-    # Features Section
-    html.Div(style=styles['section'], children=[
-        html.H2("Key Features", style={'color': '#2c3e50', 'margin-bottom': '30px'}),
-        dbc.Row([
-            dbc.Col(dbc.Card([
-                html.Div(html.I(className="fas fa-chart-line fa-2x", style={'color': '#3498db'}),
-                         style={'text-align': 'center', 'margin': '20px 0'}),
-                dbc.CardBody([
-                    html.H4("Revenue Analysis", className="card-title", style={'text-align': 'center'}),
-                    html.P("Track revenue exposure across different markets with interactive visualizations",
-                          className="card-text", style={'text-align': 'center'})
+    # Team Sidebar
+    html.Div(style=styles['team_sidebar'], children=[
+        html.H2("CSR Team", style={'margin-bottom': '20px', 'color': '#2c3e50'}),
+        html.Div([
+            html.Div(style=styles['team_member'], children=[
+                html.Img(src=member["img"], style=styles['team_member_img']),
+                html.Div(style=styles['team_member_info'], children=[
+                    html.Div(member["name"], style={'font-weight': '500'}),
+                    html.Div(member["role"], style={'color': '#6c757d', 'font-size': '0.9rem'})
                 ])
-            ], style=styles['feature_card']), width=4, className="mb-4"),
-
-            dbc.Col(dbc.Card([
-                html.Div(html.I(className="fas fa-globe fa-2x", style={'color': '#2ecc71'}),
-                         style={'text-align': 'center', 'margin': '20px 0'}),
-                dbc.CardBody([
-                    html.H4("Market Insights", className="card-title", style={'text-align': 'center'}),
-                    html.P("Compare exposure percentages across different geographical regions",
-                          className="card-text", style={'text-align': 'center'})
-                ])
-            ], style=styles['feature_card']), width=4, className="mb-4"),
-
-            dbc.Col(dbc.Card([
-                html.Div(html.I(className="fas fa-industry fa-2x", style={'color': '#e74c3c'}),
-                         style={'text-align': 'center', 'margin': '20px 0'}),
-                dbc.CardBody([
-                    html.H4("Sector Analysis", className="card-title", style={'text-align': 'center'}),
-                    html.P("Analyze exposure patterns across different industry sectors",
-                          className="card-text", style={'text-align': 'center'})
-                ])
-            ], style=styles['feature_card']), width=4, className="mb-4"),
-        ], className="mb-4"),
-    ]),
-
-    # Data Sources Section
-    html.Div(style=styles['section'], children=[
-        html.H2("Data Sources", style={'color': '#2c3e50', 'margin-bottom': '20px'}),
-        html.P([
-            "Our tool utilizes high-quality data from trusted sources:",
-            html.Ul([
-                html.Li("MSCI Economic Exposure Data", style={'margin': '10px 0'}),
-                html.Li("Company Financial Reports", style={'margin': '10px 0'}),
-                html.Li("Market Analysis Reports", style={'margin': '10px 0'}),
-            ], style={'list-style-type': 'none', 'padding-left': '20px'})
-        ], style={'line-height': '1.6', 'color': '#5a6c7d'}),
-    ]),
-
-    # Footer Section
-    html.Div(style={'text-align': 'center', 'margin-top': '40px', 'padding': '20px',
-                    'border-top': '1px solid #eee'}, children=[
-        html.P([
-            "Developed by SPG CSR | CMGW FRG | VRNC Quanthub",
-            html.Br(),
-            "© 2024 All Rights Reserved"
-        ], style={'color': '#8395a7', 'font-size': '0.9rem'})
+            ]) for member in team_members
+        ])
     ])
 ])
